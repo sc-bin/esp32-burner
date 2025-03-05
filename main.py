@@ -28,10 +28,10 @@ if py_file is None:
 else:
     print("py文件 : ", os.path.basename(py_file))
 
-class USB_BURNER(object):
+class RUNNER(object):
     usb: usb_port.USB_PORT
 
-    def callback_connected(self, port: usb_port.USB_PORT):
+    def __callback_connected(self, port: usb_port.USB_PORT):
         acm_path=port.get_dev_path()
         print("uSB插入", port.description)
         if os.path.exists(acm_path):
@@ -39,22 +39,24 @@ class USB_BURNER(object):
         else:
             print("未找到acm路径")
             return
-        if transfer.TRANSFER(acm_path).burner_picoW(bin_file) == False :
+        if transfer.TRANSFER(acm_path).is_in_burn_mode():
+            transfer.TRANSFER(acm_path).burner_picoW(bin_file)
+        else:
             transfer.TRANSFER(acm_path).send_py_file(py_file)
 
-    def callback_disconnect(self, port: usb_port.USB_PORT):
+    def __callback_disconnect(self, port: usb_port.USB_PORT):
         print("USB拔出", port.description)
 
     def __init__(self, port_number: int, description: str):
         self.usb = usb_port.USB_PORT(port_number, description)
-        self.usb.regester_callback_connected(self.callback_connected)
-        self.usb.regester_callback_disconnect(self.callback_disconnect)
+        self.usb.regester_callback_connected(self.__callback_connected)
+        self.usb.regester_callback_disconnect(self.__callback_disconnect)
         self.usb.start_detection()
 
 
-usb1 = USB_BURNER(8, "左单")
-usb1 = USB_BURNER(6, "中上")
-usb1 = USB_BURNER(5, "中下")
+usb1 = RUNNER(8, "左单")
+usb1 = RUNNER(6, "中上")
+usb1 = RUNNER(5, "中下")
 
 
 while True:

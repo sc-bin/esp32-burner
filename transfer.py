@@ -10,12 +10,22 @@ class TRANSFER(object):
             print(tty_path, "路径不存在")
             exit(1)
 
+    def is_in_burn_mode(self) -> bool:
+        """判断设备是否进入烧录模式"""
+        try:
+            # 使用 ESPSerialChip 尝试连接设备
+            chip = esptool.ESPSerialChip(self.tty_path, connect_attempts=1)
+            print("设备已进入烧录模式")
+            return True
+        except:
+            print("设备未进入烧录模式")
+            return False
+
     def burner_picoW(self, firmware_path: str) -> bool:
+        '''烧录picoW固件'''
         if not os.path.exists(firmware_path):
             print(firmware_path, "不存在")
             return False
-
-        print("烧录文件", os.path.basename(firmware_path), "到", self.tty_path)
         try:
             esptool.main(
                 [
@@ -33,14 +43,12 @@ class TRANSFER(object):
             )
             print("烧录完成")
             return True
-        except:
-            print("烧录失败:")
+        except esptool.FatalError as e:
+            print("烧录失败:", e)
         return False
 
     def send_py_file(self, py_path: str) -> bool:
-        """
-        发送文件到micropython板子上
-        """
+        """发送文件到micropython板子上"""
         if not os.path.exists(py_path):
             print(py_path, "不存在")
             return False
