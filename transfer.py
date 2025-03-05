@@ -2,9 +2,8 @@ import os
 import esptool
 
 
-class BURNER(object):
+class TRANSFER(object):
     tty_path: str
-
     def __init__(self, tty_path: str):
         self.tty_path = tty_path
         if not os.path.exists(self.tty_path):
@@ -38,7 +37,7 @@ class BURNER(object):
             print("烧录失败:")
         return False
 
-    def send_main_py(self, py_path: str) -> bool:
+    def send_py_file(self, py_path: str) -> bool:
         """
         发送文件到micropython板子上
         """
@@ -46,4 +45,10 @@ class BURNER(object):
             print(py_path, "不存在")
             return False
         print("发送文件", os.path.basename(py_path), "到", self.tty_path)
-        os.system(f"ampy --port {self.tty_path} put {py_path}")
+        ret = os.system(f"ampy --port {self.tty_path} put {py_path}")
+        if ret == 0:
+            print("发送成功")
+            return True
+        else:
+            print("发送失败")
+            return False

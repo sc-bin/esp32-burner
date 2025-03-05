@@ -1,7 +1,7 @@
 import os
 import time
 import usb_port
-import burner
+import transfer
 
 FIRMWARE_PATH = os.path.dirname(__file__) + "/烧录文件存放文件夹"
 PY_PATH = os.path.dirname(__file__) + "/烧录文件存放文件夹"
@@ -39,8 +39,8 @@ class USB_BURNER(object):
         else:
             print("未找到acm路径")
             return
-        if burner.BURNER(acm_path).burner_picoW(bin_file) == False :
-            burner.BURNER(acm_path).send_main_py(py_file)
+        if transfer.TRANSFER(acm_path).burner_picoW(bin_file) == False :
+            transfer.TRANSFER(acm_path).send_py_file(py_file)
 
     def callback_disconnect(self, port: usb_port.USB_PORT):
         print("USB拔出", port.description)
