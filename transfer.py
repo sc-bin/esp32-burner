@@ -12,14 +12,13 @@ class TRANSFER(object):
 
     def is_in_burn_mode(self) -> bool:
         """判断设备是否进入烧录模式"""
-        try:
-            # 使用 ESPSerialChip 尝试连接设备
-            chip = esptool.ESPSerialChip(self.tty_path, connect_attempts=1)
+        ret = os.system(f"timeout 3 ampy --port {self.tty_path} ls")
+        if ret != 0:
             print("设备已进入烧录模式")
             return True
-        except:
+        else:
             print("设备未进入烧录模式")
-            return False
+            return False          
 
     def burner_picoW(self, firmware_path: str) -> bool:
         '''烧录picoW固件'''
