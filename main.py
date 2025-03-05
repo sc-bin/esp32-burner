@@ -4,7 +4,7 @@ import usb_port
 import burner
 
 FIRMWARE_PATH = os.path.dirname(__file__) + "/烧录文件存放文件夹"
-
+PY_PATH = os.path.dirname(__file__) + "/烧录文件存放文件夹"
 # 查找FIRMWARE_PATH路径下第一个.bin文件
 bin_file = None
 for file in os.listdir(FIRMWARE_PATH):
@@ -17,6 +17,16 @@ if bin_file is None:
 else:
     print("bin文件 : ", os.path.basename(bin_file))
 
+py_file = None
+for file in os.listdir(FIRMWARE_PATH):
+    if file.endswith(".py"):
+        py_file = os.path.join(FIRMWARE_PATH, file)
+        break
+if py_file is None:
+    print("未找到py文件")
+    exit(1)
+else:
+    print("py文件 : ", os.path.basename(py_file))
 
 class USB_BURNER(object):
     usb: usb_port.USB_PORT
@@ -29,7 +39,7 @@ class USB_BURNER(object):
         else:
             print("未找到acm路径")
             return
-        burner.BURNER(bin_file).burner_picoW(acm_path)
+        burner.BURNER(bin_file,py_file).send_main_py(acm_path)
 
     def callback_disconnect(self, port: usb_port.USB_PORT):
         print("USB拔出", port.description)
