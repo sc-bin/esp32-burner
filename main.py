@@ -87,9 +87,6 @@ class label_color(QtWidgets.QLabel):
         self.signal_update_label.connect(self.sloat_update_label)
 
 
-# progress1 = label_color(ui.label_usb_1, ui.label_color_burn_bin.styleSheet())
-
-
 class RUNNER(QtWidgets.QLabel):
     usb: usb_port.USB_PORT
     label: QtWidgets.QLabel
@@ -113,7 +110,7 @@ class RUNNER(QtWidgets.QLabel):
         else:
             self.signal_update_label.emit(ui.label_color_send_py.styleSheet())
             transfer.TRANSFER(acm_path).send_py_file(py_file)
-            self.signal_update_label.emit(ui.label_color_burn_bin_end.styleSheet())
+            self.signal_update_label.emit(ui.label_color_send_py_end.styleSheet())
 
     def __callback_disconnect(self, port: usb_port.USB_PORT):
         print("USB拔出", port.description)
