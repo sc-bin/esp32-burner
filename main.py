@@ -39,7 +39,8 @@ class USB_BURNER(object):
         else:
             print("未找到acm路径")
             return
-        burner.BURNER(bin_file,py_file).send_main_py(acm_path)
+        if burner.BURNER(acm_path).burner_picoW(bin_file) == False :
+            burner.BURNER(acm_path).send_main_py(py_file)
 
     def callback_disconnect(self, port: usb_port.USB_PORT):
         print("USB拔出", port.description)
