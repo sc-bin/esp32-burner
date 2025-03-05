@@ -28,9 +28,10 @@ class USB_PORT(object):
             if self.is_connected():
                 if flag == True:
                     continue
-                if self.callback_connected:
-                    self.callback_connected(self)
-                flag = True
+                if self.get_dev_path() != "":
+                    if self.callback_connected:
+                        self.callback_connected(self)
+                    flag = True
             else:
                 if flag == False:
                     continue
