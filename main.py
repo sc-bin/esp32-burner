@@ -29,7 +29,7 @@ class USB_BURNER(object):
         else:
             print("未找到acm路径")
             return
-        burner.BURNER(bin_file).burner(acm_path)
+        burner.BURNER(bin_file).burner_picoW(acm_path)
 
     def callback_disconnect(self, port: usb_port.USB_PORT):
         print("USB拔出", port.description)

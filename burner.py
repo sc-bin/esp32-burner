@@ -8,7 +8,7 @@ class BURNER(object):
             print("未找到firmware文件")
             exit(1)
     
-    def burner(self,dev_path:str):
+    def burner_picoW(self,dev_path:str)->bool:
         print("烧录文件",os.path.basename(self.firmware_path),"到",dev_path)
         try:
             esptool.main([
@@ -18,6 +18,7 @@ class BURNER(object):
                 'write_flash', '-z', '0', self.firmware_path
             ])
             print("烧录完成")
-        except esptool.FatalError as e:
-            print(f"烧录失败: {e}")
-        print("完成")
+            return True
+        except:
+            print(f"烧录失败:")
+        return  False
