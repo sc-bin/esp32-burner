@@ -1,4 +1,3 @@
-
 import os
 import time
 import usb_port
@@ -20,15 +19,23 @@ timer.timeout.connect(lambda: None)  # Let the interpreter run each 100 ms
 # 初始化窗口
 from PyQt5 import QtWidgets
 import sys
+
 app = QtWidgets.QApplication(sys.argv)
 
-import page_mode_burner
+# import page_mode_burner
+import page_choose
 
 
+class RUN:
+    def sloat_choose(self, num: int):
+        print("收到选择", num)
+
+    def __init__(self):
+        self.page1 = page_choose.PAGE()
+        self.page1.show()
+        self.page1.signal_choose.connect(self.sloat_choose)
 
 
-
-
-
+run = RUN()
 
 sys.exit(app.exec_())
