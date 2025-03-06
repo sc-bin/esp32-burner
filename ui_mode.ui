@@ -173,7 +173,7 @@
      </item>
     </layout>
    </widget>
-   <widget class="QTextEdit" name="textEdit_files">
+   <widget class="QTextEdit" name="textEdit_notice">
     <property name="geometry">
      <rect>
       <x>10</x>

@@ -23,31 +23,39 @@ class label_set_stylesheet(PyQt5.QtCore.QObject):
         self.signal_update.emit(label, stylesheet)
 
 
-class _USB_PROGRESS:
+class USB_PROGRESS:
     usb: USB_PORT
     label: QtWidgets.QLabel
+    textEdit: QtWidgets.QTextEdit
     flag_working = False
     callback = None
 
+    def print(self,text:str):
+        self.textEdit.append(f'{time.strftime("%H:%M:%S", time.localtime())}: {text}')
     def __callback_connected(self, port: USB_PORT):
         print("USB插入", port.description)
+        self.print("插入")
         self.flag_working = True
         if self.callback != None:
-            self.callback(port, self.label)
+            self.callback(port, self)
         self.flag_working = False
 
     def __callback_disconnect(self, port: USB_PORT):
         self.flag_working = True
         print("USB拔出", port.description)
+        self.print("拔出")
         label_set_stylesheet(self.label, ui.label_color_free.styleSheet())
         self.flag_working = False
 
-    def __init__(self, usb: USB_PORT, label: QtWidgets.QLabel):
+    def __init__(
+        self, usb: USB_PORT, label: QtWidgets.QLabel, textEdit: QtWidgets.QTextEdit
+    ):
         self.label = label
+        self.textEdit = textEdit
         self.usb = usb
         self.usb.regester_callback_connected(self.__callback_connected)
         self.usb.regester_callback_disconnect(self.__callback_disconnect)
-
+        self.textEdit.textChanged.connect(lambda: self.textEdit.moveCursor(QtGui.QTextCursor.End))
     def run(self):
         self.usb.start_detection()
 
@@ -58,9 +66,9 @@ class _USB_PROGRESS:
 
 
 class PAGE_MODE(QtWidgets.QMainWindow):
-    usb1: _USB_PROGRESS
-    usb2: _USB_PROGRESS
-    usb3: _USB_PROGRESS
+    usb1: USB_PROGRESS
+    usb2: USB_PROGRESS
+    usb3: USB_PROGRESS
 
     signal_return = pyqtSignal()
 
@@ -81,9 +89,9 @@ class PAGE_MODE(QtWidgets.QMainWindow):
         ui.setupUi(self)
         ui.pushButton_return.clicked.connect(self.sloat_return_click)
 
-        self.usb1 = _USB_PROGRESS(usb1, ui.label_usb_1)
-        self.usb2 = _USB_PROGRESS(usb2, ui.label_usb_2)
-        self.usb3 = _USB_PROGRESS(usb3, ui.label_usb_3)
+        self.usb1 = USB_PROGRESS(usb1, ui.label_usb_1, ui.textEdit_usb_1)
+        self.usb2 = USB_PROGRESS(usb2, ui.label_usb_2, ui.textEdit_usb_2)
+        self.usb3 = USB_PROGRESS(usb3, ui.label_usb_3, ui.textEdit_usb_3)
 
     def showEvent(self, event):
         super().showEvent(event)
