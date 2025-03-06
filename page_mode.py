@@ -47,6 +47,10 @@ class USB_PROGRESS:
         label_set_stylesheet(self.label, ui.label_color_free.styleSheet())
         self.flag_working = False
 
+    def scroll_to_end(self):
+        cursor = self.textEdit.textCursor()
+        cursor.movePosition(QtGui.QTextCursor.End)
+        self.textEdit.setTextCursor(cursor)
     def __init__(
         self, usb: USB_PORT, label: QtWidgets.QLabel, textEdit: QtWidgets.QTextEdit
     ):
@@ -55,7 +59,7 @@ class USB_PROGRESS:
         self.usb = usb
         self.usb.regester_callback_connected(self.__callback_connected)
         self.usb.regester_callback_disconnect(self.__callback_disconnect)
-        self.textEdit.textChanged.connect(lambda: self.textEdit.moveCursor(QtGui.QTextCursor.End))
+        self.textEdit.textChanged.connect(self.scroll_to_end)
     def run(self):
         self.usb.start_detection()
 

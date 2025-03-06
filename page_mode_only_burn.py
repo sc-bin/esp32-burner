@@ -17,6 +17,7 @@ class PAGE(PAGE_MODE):
             print(acm_path)
         else:
             print("未找到acm路径")
+            label_set_stylesheet(usb_progress.label, ui.label_color_error.styleSheet())
             return
         usb_progress.print("开始烧BIN")
         label_set_stylesheet(usb_progress.label, ui.label_color_burn_bin.styleSheet())
