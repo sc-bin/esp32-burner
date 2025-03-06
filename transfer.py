@@ -44,6 +44,8 @@ class TRANSFER(object):
             return True
         except esptool.FatalError as e:
             print("烧录失败:", e)
+        except:
+            print("错误")
         return False
 
     def send_py_file(self, py_path: str) -> bool:
