@@ -16,15 +16,13 @@ class USB_PORT(object):
         self.description = description
         self.USB_DEV_PATH = "/sys/bus/usb/devices/" + str(port_number) + "-1"
         self.flag_detection_run = False
-        self.detection_thread = threading.Thread(target=self.__thread_check_connect)
-        self.detection_thread.daemon = True  # 设置线程为守护线程
 
     def __thread_check_connect(self):
         """
         连接状态检测线程,初始化时启动
         """
         flag = None
-        while not self.flag_detection_run:
+        while self.flag_detection_run:
             if self.is_connected():
                 if flag == True:
                     continue
@@ -56,12 +54,16 @@ class USB_PORT(object):
         """
         启动USB连接检测线程
         """
+        self.detection_thread = threading.Thread(target=self.__thread_check_connect)
+        self.detection_thread.daemon = True  # 设置线程为守护线程
+        self.flag_detection_run = True
         self.detection_thread.start()
 
     def stop_detection(self):
         """停止usb连接检测线程"""
-        self.flag_detection_run = True
 
+        self.flag_detection_run = False
+        self.detection_thread.join()
     # 该usb口是否插入
     def is_connected(self) -> bool:
         """
