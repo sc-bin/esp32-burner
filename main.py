@@ -25,7 +25,7 @@ import page_mode_only_burn
 import page_choose
 
 
-FIRMWARE_PATH = os.path.dirname(__file__) + "/烧录文件存放文件夹"
+FIRMWARE_PATH = os.path.dirname(__file__) + "/待烧录的bin文件存放到此"
 # 查找FIRMWARE_PATH路径下第一个.bin文件
 bin_file = None
 for file in os.listdir(FIRMWARE_PATH):
