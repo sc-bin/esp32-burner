@@ -23,15 +23,32 @@ class label_set_stylesheet(PyQt5.QtCore.QObject):
         self.signal_update.emit(label, stylesheet)
 
 
+class textEdit_ops(PyQt5.QtCore.QObject):
+    textEdit: QtWidgets.QTextEdit
+    signal_update = pyqtSignal(QtWidgets.QTextEdit, str)
+
+    def sloat_update(self, textEdit: QtWidgets.QTextEdit, text: str):
+        textEdit.append(text)
+
+    def __init__(self, textEdit: QtWidgets.QTextEdit):
+        super().__init__()
+        self.textEdit = textEdit
+        self.signal_update.connect(self.sloat_update)
+
+    def append(self, text: str):
+        self.signal_update.emit(self.textEdit, text)
+
+
 class USB_PROGRESS:
     usb: USB_PORT
     label: QtWidgets.QLabel
-    textEdit: QtWidgets.QTextEdit
+    textEdit: textEdit_ops
     flag_working = False
     callback = None
 
-    def print(self,text:str):
+    def print(self, text: str):
         self.textEdit.append(f'{time.strftime("%H:%M:%S", time.localtime())}: {text}')
+
     def __callback_connected(self, port: USB_PORT):
         print("USB插入", port.description)
         self.print("插入")
@@ -47,26 +64,24 @@ class USB_PROGRESS:
         label_set_stylesheet(self.label, ui.label_color_free.styleSheet())
         self.flag_working = False
 
-    def scroll_to_end(self):
-        cursor = self.textEdit.textCursor()
-        cursor.movePosition(QtGui.QTextCursor.End)
-        self.textEdit.setTextCursor(cursor)
     def __init__(
         self, usb: USB_PORT, label: QtWidgets.QLabel, textEdit: QtWidgets.QTextEdit
     ):
         self.label = label
-        self.textEdit = textEdit
+        self.textEdit = textEdit_ops(textEdit)
         self.usb = usb
         self.usb.regester_callback_connected(self.__callback_connected)
         self.usb.regester_callback_disconnect(self.__callback_disconnect)
-        self.textEdit.textChanged.connect(self.scroll_to_end)
+
     def run(self):
         self.usb.start_detection()
+        # self.timer = threading.Timer(0.3, self.usb.start_detection)
+        # self.timer.start()
 
     def exit(self):
-        self.usb.stop_detection()
         while self.flag_working:
             time.sleep(0.1)
+        self.usb.stop_detection()
 
 
 class PAGE_MODE(QtWidgets.QMainWindow):
@@ -80,7 +95,7 @@ class PAGE_MODE(QtWidgets.QMainWindow):
         self.usb1.exit()
         self.usb2.exit()
         self.usb3.exit()
-        self.close()
+        self.hide()
         self.signal_return.emit()
 
     def __init__(
@@ -92,7 +107,6 @@ class PAGE_MODE(QtWidgets.QMainWindow):
         super().__init__()
         ui.setupUi(self)
         ui.pushButton_return.clicked.connect(self.sloat_return_click)
-
         self.usb1 = USB_PROGRESS(usb1, ui.label_usb_1, ui.textEdit_usb_1)
         self.usb2 = USB_PROGRESS(usb2, ui.label_usb_2, ui.textEdit_usb_2)
         self.usb3 = USB_PROGRESS(usb3, ui.label_usb_3, ui.textEdit_usb_3)

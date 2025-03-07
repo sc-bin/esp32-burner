@@ -42,27 +42,30 @@ else:
 
 page1 = page_choose.PAGE()
 
-page_modes = [
-    page_mode_only_burn.PAGE(
-        bin_file, USB_PORT(8, "左单"), USB_PORT(6, "中上"), USB_PORT(5, "中下")
-    ),
-    page_mode_only_send.PAGE(
-        PY_PATH, USB_PORT(8, "左单"), USB_PORT(6, "中上"), USB_PORT(5, "中下")
-    ),
-]
+page_mode1 = page_mode_only_burn.PAGE(
+    bin_file, USB_PORT(8, "左单"), USB_PORT(6, "中上"), USB_PORT(5, "中下")
+)
+
+page_mode2 = page_mode_only_send.PAGE(
+    PY_PATH, USB_PORT(8, "左单"), USB_PORT(6, "中上"), USB_PORT(5, "中下")
+)
 
 
 def to_other_page(num: int):
-    page_modes[num - 1].show()
+    if num == 1:
+        page_mode1.show()
+    elif num == 2:
+        page_mode2.show()
 
 
 def show_choose_page():
     page1.show()
-    page1.signal_choose.connect(to_other_page)
 
 
-for page in page_modes:
-    page.signal_return.connect(show_choose_page)
+page1.signal_choose.connect(to_other_page)
+page_mode1.signal_return.connect(show_choose_page)
+page_mode2.signal_return.connect(show_choose_page)
+
 show_choose_page()
 
 sys.exit(app.exec_())
