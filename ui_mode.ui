@@ -128,20 +128,17 @@
       <x>10</x>
       <y>110</y>
       <width>451</width>
-      <height>161</height>
+      <height>171</height>
      </rect>
     </property>
-    <layout class="QGridLayout" name="gridLayout_2" columnstretch="30,30">
-     <item row="1" column="1">
-      <widget class="QTextEdit" name="textEdit_usb_2"/>
-     </item>
-     <item row="2" column="0">
-      <widget class="QLabel" name="label_usb_3">
-       <property name="frameShape">
-        <enum>QFrame::Box</enum>
+    <layout class="QGridLayout" name="gridLayout_2" columnstretch="20,30,20,0">
+     <item row="2" column="2">
+      <widget class="QProgressBar" name="progressBar_usb_3">
+       <property name="styleSheet">
+        <string notr="true"/>
        </property>
-       <property name="text">
-        <string>usb3</string>
+       <property name="value">
+        <number>0</number>
        </property>
       </widget>
      </item>
@@ -155,6 +152,26 @@
        </property>
       </widget>
      </item>
+     <item row="0" column="2">
+      <widget class="QProgressBar" name="progressBar_usb_1">
+       <property name="styleSheet">
+        <string notr="true"/>
+       </property>
+       <property name="value">
+        <number>0</number>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="2">
+      <widget class="QProgressBar" name="progressBar_usb_2">
+       <property name="styleSheet">
+        <string notr="true"/>
+       </property>
+       <property name="value">
+        <number>0</number>
+       </property>
+      </widget>
+     </item>
      <item row="0" column="0">
       <widget class="QLabel" name="label_usb_1">
        <property name="frameShape">
@@ -165,8 +182,21 @@
        </property>
       </widget>
      </item>
+     <item row="2" column="0">
+      <widget class="QLabel" name="label_usb_3">
+       <property name="frameShape">
+        <enum>QFrame::Box</enum>
+       </property>
+       <property name="text">
+        <string>usb3</string>
+       </property>
+      </widget>
+     </item>
      <item row="0" column="1">
       <widget class="QTextEdit" name="textEdit_usb_1"/>
+     </item>
+     <item row="1" column="1">
+      <widget class="QTextEdit" name="textEdit_usb_2"/>
      </item>
      <item row="2" column="1">
       <widget class="QTextEdit" name="textEdit_usb_3"/>

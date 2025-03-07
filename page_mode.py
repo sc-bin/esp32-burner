@@ -65,9 +65,14 @@ class USB_PROGRESS:
         self.flag_working = False
 
     def __init__(
-        self, usb: USB_PORT, label: QtWidgets.QLabel, textEdit: QtWidgets.QTextEdit
+        self,
+        usb: USB_PORT,
+        label: QtWidgets.QLabel,
+        textEdit: QtWidgets.QTextEdit,
+        progressBar: QtWidgets.QProgressBar,
     ):
         self.label = label
+        self.progressBar = progressBar
         self.textEdit = textEdit_ops(textEdit)
         self.usb = usb
         self.usb.regester_callback_connected(self.__callback_connected)
@@ -107,9 +112,15 @@ class PAGE_MODE(QtWidgets.QMainWindow):
         super().__init__()
         ui.setupUi(self)
         ui.pushButton_return.clicked.connect(self.sloat_return_click)
-        self.usb1 = USB_PROGRESS(usb1, ui.label_usb_1, ui.textEdit_usb_1)
-        self.usb2 = USB_PROGRESS(usb2, ui.label_usb_2, ui.textEdit_usb_2)
-        self.usb3 = USB_PROGRESS(usb3, ui.label_usb_3, ui.textEdit_usb_3)
+        self.usb1 = USB_PROGRESS(
+            usb1, ui.label_usb_1, ui.textEdit_usb_1, ui.progressBar_usb_1
+        )
+        self.usb2 = USB_PROGRESS(
+            usb2, ui.label_usb_2, ui.textEdit_usb_2, ui.progressBar_usb_2
+        )
+        self.usb3 = USB_PROGRESS(
+            usb3, ui.label_usb_3, ui.textEdit_usb_3, ui.progressBar_usb_3
+        )
 
     def showEvent(self, event):
         super().showEvent(event)

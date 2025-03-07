@@ -26,6 +26,7 @@ class PAGE(PAGE_MODE):
                 usb_progress.label, ui.label_color_burn_bin_end.styleSheet()
             )
             usb_progress.print("烧BIN完成")
+
         else:
             label_set_stylesheet(usb_progress.label, ui.label_color_error.styleSheet())
             usb_progress.print("错误")
