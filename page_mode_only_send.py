@@ -11,6 +11,15 @@ class PAGE(PAGE_MODE):
     files = []
     files_size = 0
 
+    def set_color_run(self, label: QtWidgets.QLabel):
+        label_set_stylesheet(label, ui.label_color_send_py.styleSheet())
+
+    def set_color_end(self, label: QtWidgets.QLabel):
+        label_set_stylesheet(label, ui.label_color_send_py_end.styleSheet())
+
+    def set_color_error(self, label: QtWidgets.QLabel):
+        label_set_stylesheet(label, ui.label_color_error.styleSheet())
+
     def run_in_connected(self, port: USB_PORT, usb_progress: USB_PROGRESS):
         acm_path = port.get_dev_path()
         if os.path.exists(acm_path):
@@ -18,27 +27,26 @@ class PAGE(PAGE_MODE):
         else:
             label_set_stylesheet(usb_progress.label, ui.label_color_error.styleSheet())
             print("未找到acm路径")
+            self.set_color_error(usb_progress.label)
             return
-        # for循环遍历files列表，挨个发送
+        usb_progress.print("正在清除板上py文件")
+        transfer.TRANSFER(acm_path).files_clear()
         total = 0
+        # 挨个发送
         for i in self.files:
             f = i
             now_file_size = os.path.getsize(i)
             usb_progress.print(f.replace(self.file_dir, "") + " " + str(now_file_size))
-            label_set_stylesheet(
-                usb_progress.label, ui.label_color_send_py.styleSheet()
-            )
-            if transfer.TRANSFER(acm_path).send_py_file(i):
-                # 计算目前发送完成的文件体积的占总文件体积的百分之多少
-                total += now_file_size
-                usb_progress.progress.set_value(int(total/self.files_size*100))
 
+            self.set_color_run(usb_progress.label)
+            if transfer.TRANSFER(acm_path).send_file(i):
+                total += now_file_size
+                usb_progress.progress.set_value(int(total / self.files_size * 100))
             else:
-                label_set_stylesheet(
-                    usb_progress.label, ui.label_color_error.styleSheet()
-                )
-                print("退出")
-                break
+                self.set_color_error(usb_progress.label)
+                return
+            self.set_color_end(usb_progress.label)
+        transfer.TRANSFER(acm_path).run_py_file(self.file_dir+"/main.py")
 
     def __init__(
         self,

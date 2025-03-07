@@ -90,7 +90,7 @@ class RUNNER(QtWidgets.QLabel):
             self.signal_update_label.emit(ui_main.label_color_burn_bin_end.styleSheet())
         else:
             self.signal_update_label.emit(ui_main.label_color_send_py.styleSheet())
-            transfer.TRANSFER(acm_path).send_py_file(py_file)
+            transfer.TRANSFER(acm_path).send_file(py_file)
             self.signal_update_label.emit(ui_main.label_color_send_py_end.styleSheet())
 
     def __callback_disconnect(self, port: usb_port.USB_PORT):
