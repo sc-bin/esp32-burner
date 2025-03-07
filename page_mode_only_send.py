@@ -32,6 +32,7 @@ class PAGE(PAGE_MODE):
             else:
                 label_set_stylesheet(usb_progress.label, ui.label_color_error.styleSheet())
                 print("退出")
+                break
     def __init__(
         self,
         py_file_dir: str,
