@@ -9,6 +9,7 @@ import transfer
 class PAGE(PAGE_MODE):
     file_dir: str
     files = []
+    files_size = 0
 
     def run_in_connected(self, port: USB_PORT, usb_progress: USB_PROGRESS):
         acm_path = port.get_dev_path()
@@ -19,20 +20,26 @@ class PAGE(PAGE_MODE):
             print("未找到acm路径")
             return
         # for循环遍历files列表，挨个发送
+        total = 0
         for i in self.files:
-            f=i
-            # 输出文件路径i中除了开头的file_dir的部分
-            usb_progress.print(f.replace(self.file_dir, ""))
-
-            label_set_stylesheet(usb_progress.label, ui.label_color_send_py.styleSheet())
+            f = i
+            now_file_size = os.path.getsize(i)
+            usb_progress.print(f.replace(self.file_dir, "") + " " + str(now_file_size))
+            label_set_stylesheet(
+                usb_progress.label, ui.label_color_send_py.styleSheet()
+            )
             if transfer.TRANSFER(acm_path).send_py_file(i):
-                label_set_stylesheet(
-                    usb_progress.label,ui.label_color_send_py_end.styleSheet()
-                )
+                # 计算目前发送完成的文件体积的占总文件体积的百分之多少
+                total += now_file_size
+                usb_progress.progress.set_value(int(total/self.files_size*100))
+
             else:
-                label_set_stylesheet(usb_progress.label, ui.label_color_error.styleSheet())
+                label_set_stylesheet(
+                    usb_progress.label, ui.label_color_error.styleSheet()
+                )
                 print("退出")
                 break
+
     def __init__(
         self,
         py_file_dir: str,
@@ -50,7 +57,13 @@ class PAGE(PAGE_MODE):
         for root, dirs, files in os.walk(py_file_dir):
             for file in files:
                 self.files.append(os.path.join(root, file))
-                
-        # 将文件列表挨个输出，且删除掉路径中file_dir这个部分
+
+        # 计算总文件大小
+        for i in self.files:
+            self.files_size += os.path.getsize(i)
+
+        ui.textEdit_notice.append(f"共{self.files_size}Byte")
+
+        # 挨个输出文件名
         for i in self.files:
             ui.textEdit_notice.append(i.replace(py_file_dir, ""))

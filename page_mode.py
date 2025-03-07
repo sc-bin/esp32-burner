@@ -39,6 +39,22 @@ class textEdit_ops(PyQt5.QtCore.QObject):
         self.signal_update.emit(self.textEdit, text)
 
 
+class bar_ops(PyQt5.QtCore.QObject):
+    progressBar: QtWidgets.QProgressBar
+    signal_set_value = pyqtSignal(int)
+
+    def slot_set_value(self, value: int):
+        self.progressBar.setValue(value)
+
+    def set_value(self, value: int):
+        self.signal_set_value.emit(value)
+
+    def __init__(self, progressBar: QtWidgets.QProgressBar):
+        super().__init__()
+        self.progressBar = progressBar
+        self.signal_set_value.connect(self.slot_set_value)
+
+
 class USB_PROGRESS:
     usb: USB_PORT
     label: QtWidgets.QLabel
@@ -62,6 +78,8 @@ class USB_PROGRESS:
         print("USB拔出", port.description)
         self.print("拔出")
         label_set_stylesheet(self.label, ui.label_color_free.styleSheet())
+        self.progress.set_value(0)
+
         self.flag_working = False
 
     def __init__(
@@ -72,7 +90,7 @@ class USB_PROGRESS:
         progressBar: QtWidgets.QProgressBar,
     ):
         self.label = label
-        self.progressBar = progressBar
+        self.progress = bar_ops(progressBar)
         self.textEdit = textEdit_ops(textEdit)
         self.usb = usb
         self.usb.regester_callback_connected(self.__callback_connected)

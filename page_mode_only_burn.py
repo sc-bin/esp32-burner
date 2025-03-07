@@ -12,6 +12,7 @@ class PAGE(PAGE_MODE):
     def run_in_connected(self, port: USB_PORT, usb_progress: USB_PROGRESS):
         acm_path = port.get_dev_path()
         print("uSB插入", port.description)
+        usb_progress.progress.set_value(0)
         # 获取当前小时分钟秒的字符串
         if os.path.exists(acm_path):
             print(acm_path)
@@ -20,16 +21,21 @@ class PAGE(PAGE_MODE):
             label_set_stylesheet(usb_progress.label, ui.label_color_error.styleSheet())
             return
         usb_progress.print("开始烧BIN")
+        usb_progress.progress.set_value(50)
         label_set_stylesheet(usb_progress.label, ui.label_color_burn_bin.styleSheet())
         if transfer.TRANSFER(acm_path).burner_picoW(self.bin_file):
             label_set_stylesheet(
                 usb_progress.label, ui.label_color_burn_bin_end.styleSheet()
             )
             usb_progress.print("烧BIN完成")
+            usb_progress.progress.set_value(100)
+
 
         else:
             label_set_stylesheet(usb_progress.label, ui.label_color_error.styleSheet())
             usb_progress.print("错误")
+            usb_progress.progress.set_value(0)
+
 
     def __init__(
         self,
