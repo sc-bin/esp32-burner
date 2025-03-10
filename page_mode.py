@@ -31,17 +31,19 @@ class bar_ops(PyQt5.QtCore.QObject):
 class USB_PROGRESS:
     usb: USB_PORT
     label: QtWidgets.QLabel
-    textEdit: textEdit_ops
+    textEdit: QtWidgets.QTextEdit
     flag_working = False
     callback = None
     last_disconnect_time = None  # 新增属性，记录上次USB拔出的时间
 
+    def textEdit_append(self, string: str):
+        run_at_sloat(lambda: self.textEdit.append(string))
     def label_setText(self, string: str):
         run_at_sloat(lambda: self.label.setText(string))
 
     def print(self, text: str):
         log_str = f'{time.strftime("%H:%M:%S", time.localtime())}: {text}'
-        self.textEdit.append(log_str)
+        self.textEdit_append(log_str)
         print(f"{self.usb.description} : " + log_str)
 
     def __callback_connected(self, port: USB_PORT):
@@ -75,7 +77,7 @@ class USB_PROGRESS:
     ):
         self.label = label
         self.progress = bar_ops(progressBar)
-        self.textEdit = textEdit_ops(textEdit)
+        self.textEdit = textEdit
         self.usb = usb
         self.usb.regester_callback_connected(self.__callback_connected)
         self.usb.regester_callback_disconnect(self.__callback_disconnect)

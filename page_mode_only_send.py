@@ -35,15 +35,13 @@ class PAGE(PAGE_MODE):
         usb_progress.print("正在清除板上py文件")
         transfer.TRANSFER(acm_path).files_clear()
         usb_progress.label_setText("发送文件...")
+        self.set_color_run(usb_progress.label)
         total = 0
         # 挨个发送
         for i in self.files:
-            f = i
             now_file_size = os.path.getsize(i)
             relative_path = os.path.relpath(i, self.file_dir)  # 计算相对路径
             usb_progress.print(relative_path + " " + str(now_file_size))
-
-            self.set_color_run(usb_progress.label)
 
             # 判断是否创建子文件夹
             if os.path.dirname(relative_path):  # 如果相对路径有父目录
