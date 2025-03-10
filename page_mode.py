@@ -34,16 +34,24 @@ class USB_PROGRESS:
     textEdit: textEdit_ops
     flag_working = False
     callback = None
+    last_disconnect_time = None  # 新增属性，记录上次USB拔出的时间
 
-    def label_setText(self,string: str):
+    def label_setText(self, string: str):
         run_at_sloat(lambda: self.label.setText(string))
 
     def print(self, text: str):
         self.textEdit.append(f'{time.strftime("%H:%M:%S", time.localtime())}: {text}')
+
     def __callback_connected(self, port: USB_PORT):
+        current_time = time.time()
+        if self.last_disconnect_time and (current_time - self.last_disconnect_time) < 3:
+            print("不到3秒")
+            self.print("本次拔出不超过3秒,不处理")
+            self.label_setText("usb防抖保护")
+            return  # 如果距离上次拔出不到3秒，直接返回
         print("USB插入", port.description)
         self.print("插入")
-        self.label_setText(port.description+"插入")
+        self.label_setText(port.description + "插入")
         self.flag_working = True
         if self.callback != None:
             self.callback(port, self)
@@ -53,10 +61,10 @@ class USB_PROGRESS:
         self.flag_working = True
         print("USB拔出", port.description)
         self.print("拔出")
-        self.label_setText(port.description+"拔出")
+        self.label_setText(port.description + "拔出")
         label_set_stylesheet(self.label, color.label_background.free)
         self.progress.set_value(0)
-
+        self.last_disconnect_time = time.time()  # 记录USB拔出的时间
         self.flag_working = False
 
     def __init__(
