@@ -1,4 +1,5 @@
 import os
+import time  # 导入time模块
 
 from page_mode import *
 
@@ -21,6 +22,7 @@ class PAGE(PAGE_MODE):
         label_set_stylesheet(label, ui.label_color_error.styleSheet())
 
     def run_in_connected(self, port: USB_PORT, usb_progress: USB_PROGRESS):
+        start_time = time.time()  # 记录开始时间
         acm_path = port.get_dev_path()
         if os.path.exists(acm_path):
             print(acm_path)
@@ -54,6 +56,8 @@ class PAGE(PAGE_MODE):
                 return
             self.set_color_end(usb_progress.label)
         transfer.TRANSFER(acm_path).run_py_file(self.file_dir + "/main.py")
+        end_time = time.time()  # 记录结束时间
+        usb_progress.print(f"文件传输完成: {end_time - start_time:.2f} 秒")  # 输出总共花费的时间
 
     def __init__(
         self,

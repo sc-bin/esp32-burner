@@ -10,6 +10,7 @@ class PAGE(PAGE_MODE):
     bin_file: str
 
     def run_in_connected(self, port: USB_PORT, usb_progress: USB_PROGRESS):
+        start_time = time.time()  # 记录开始时间
         acm_path = port.get_dev_path()
         print("uSB插入", port.description)
         usb_progress.progress.set_value(0)
@@ -31,7 +32,8 @@ class PAGE(PAGE_MODE):
             label_set_stylesheet(
                 usb_progress.label, ui.label_color_burn_bin_end.styleSheet()
             )
-            usb_progress.print("烧BIN完成")
+            end_time = time.time()  # 记录结束时间
+            usb_progress.print(f"烧BIN完成: {end_time - start_time:.2f} 秒")  # 输出总共花费的时间
             usb_progress.progress.set_value(100)
 
         else:
