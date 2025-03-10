@@ -49,7 +49,6 @@ class PAGE(PAGE_MODE):
             if os.path.dirname(relative_path):  # 如果相对路径有父目录
                 sub_dir = os.path.dirname(relative_path)
                 transfer.TRANSFER(acm_path).mkdir_on_board(sub_dir)  # 创建子目录
-            print("relative_path=", relative_path)
             if transfer.TRANSFER(acm_path).send_file(
                 i, relative_path
             ):  # 发送文件到相对路径
