@@ -2,7 +2,7 @@ import os
 import subprocess
 import re  # 添加正则表达式模块
 
-banudrate = 1152000
+baudrate = 1152000
 # banudrate = 921600
 
 
@@ -25,7 +25,7 @@ class AMPY_OPS(object):
         if not os.path.exists(self.tty_path):
             print(self.tty_path, "路径不存在")
             return False
-        ret = os.system(f"ampy --baud {banudrate} --port {self.tty_path} {command}")
+        ret = os.system(f"rshell --baud {baudrate} --port {self.tty_path} {command}")
         if ret == 0:
             print("运行成功")
             return True
@@ -38,12 +38,12 @@ class AMPY_OPS(object):
         if not os.path.exists(self.tty_path):
             print(self.tty_path, "路径不存在")
             return False
-        ret = os.popen(f"ampy --baud {banudrate} --port {self.tty_path} {command}")
+        ret = os.popen(f"rshell --baud {baudrate} --port {self.tty_path} {command}")
         return ret.read()
 
     def is_in_burn_mode(self) -> bool:
         """判断设备是否进入烧录模式"""
-        ret = os.system(f"timeout 3 ampy --port {self.tty_path} ls")
+        ret = os.system(f"timeout 3 rshell --port {self.tty_path} ls")
         if ret != 0:
             print("设备已进入烧录模式")
             return True
@@ -53,11 +53,11 @@ class AMPY_OPS(object):
 
     def send_file(self, py_path: str, dest_path="") -> bool:
         """发送文件到micropython板子指定路径上"""
-        return self.run(f"put {py_path} {dest_path}")
+        return self.run(f"cp {py_path} /pyboard/{dest_path}")
 
     def files_clear(self) -> bool:
         """清除micropython板子上的文件"""
-        self.run(f"rmdir /")
+        self.run(f"rm -rf /pyboard/*")
         return True
 
     def mkdir_on_board(self, dir_name: str) -> bool:
@@ -66,19 +66,20 @@ class AMPY_OPS(object):
         if self.is_file_on_board(dir_name):
             print("文件夹已存在")
             return True
-        return self.run(f"mkdir {dir_name}")
+        return self.run(f"mkdir /pyboard/{dir_name}")
 
     def is_file_on_board(self, file_name: str) -> bool:
         """判断文件是否存在"""
-        return self.run(f"ls | grep {file_name}")
+        output = self.run_with_return(f"ls /pyboard/")
+        return file_name in output
 
     def reset_mpy_board(self):
         """重启micropython板子"""
-        return self.run(f"reset")
+        return self.run(f"repl ~ import machine; machine.reset()")
 
     def run_py_file(self, file_name: str):
         """运行电脑上的文件"""
-        return self.run(f"run {file_name}")
+        return self.run(f"repl ~ exec(open('{file_name}').read())")
 
 
 class TRANSFER(AMPY_OPS):
