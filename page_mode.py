@@ -7,36 +7,9 @@ import time
 from usb_port import USB_PORT
 import ui_mode
 import color
+from widget_set import *
 
 ui = ui_mode.Ui_MainWindow()
-
-
-class label_set_stylesheet(PyQt5.QtCore.QObject):
-    signal_update = pyqtSignal(QtWidgets.QLabel, str)
-
-    def sloat_update_label(self, label: QtWidgets.QLabel, sytlesheet: str):
-        label.setStyleSheet(sytlesheet)
-
-    def __init__(self, label: QtWidgets.QLabel, stylesheet: str):
-        super().__init__()
-        self.signal_update.connect(self.sloat_update_label)
-        self.signal_update.emit(label, stylesheet)
-
-
-class textEdit_ops(PyQt5.QtCore.QObject):
-    textEdit: QtWidgets.QTextEdit
-    signal_update = pyqtSignal(QtWidgets.QTextEdit, str)
-
-    def sloat_update(self, textEdit: QtWidgets.QTextEdit, text: str):
-        textEdit.append(text)
-
-    def __init__(self, textEdit: QtWidgets.QTextEdit):
-        super().__init__()
-        self.textEdit = textEdit
-        self.signal_update.connect(self.sloat_update)
-
-    def append(self, text: str):
-        self.signal_update.emit(self.textEdit, text)
 
 
 class bar_ops(PyQt5.QtCore.QObject):
@@ -62,12 +35,15 @@ class USB_PROGRESS:
     flag_working = False
     callback = None
 
+    def label_setText(self,string: str):
+        run_at_sloat(lambda: self.label.setText(string))
+
     def print(self, text: str):
         self.textEdit.append(f'{time.strftime("%H:%M:%S", time.localtime())}: {text}')
-
     def __callback_connected(self, port: USB_PORT):
         print("USB插入", port.description)
         self.print("插入")
+        self.label_setText(port.description+"插入")
         self.flag_working = True
         if self.callback != None:
             self.callback(port, self)
@@ -77,6 +53,7 @@ class USB_PROGRESS:
         self.flag_working = True
         print("USB拔出", port.description)
         self.print("拔出")
+        self.label_setText(port.description+"拔出")
         label_set_stylesheet(self.label, color.label_background.free)
         self.progress.set_value(0)
 

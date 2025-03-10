@@ -10,6 +10,7 @@ class PAGE(PAGE_MODE):
     bin_file: str
 
     def run_in_connected(self, port: USB_PORT, usb_progress: USB_PROGRESS):
+
         start_time = time.time()  # 记录开始时间
         acm_path = port.get_dev_path()
         print("uSB插入", port.description)
@@ -21,9 +22,10 @@ class PAGE(PAGE_MODE):
             print("未找到acm路径")
             label_set_stylesheet(usb_progress.label, color.label_background.error)
             return
-        usb_progress.print("开始烧BIN")
+        usb_progress.print("开始烧BIN...")
         usb_progress.progress.set_value(0)
-        label_set_stylesheet(usb_progress.label, color.label_background.burn_runing)
+        label_set_stylesheet(usb_progress.label, color.label_background.burn_running)
+        usb_progress.label_setText("开始烧BIN...")
 
         def progress(value: int):
             usb_progress.progress.set_value(value)
@@ -35,10 +37,12 @@ class PAGE(PAGE_MODE):
                 f"烧BIN完成: {end_time - start_time:.2f} 秒"
             )  # 输出总共花费的时间
             usb_progress.progress.set_value(100)
+            usb_progress.label_setText("烧BIN完成")
 
         else:
             label_set_stylesheet(usb_progress.label, color.label_background.error)
             usb_progress.print("错误")
+            usb_progress.label_setText("错误")
             usb_progress.progress.set_value(0)
 
     def __init__(

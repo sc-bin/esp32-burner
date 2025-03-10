@@ -43,11 +43,11 @@ else:
 page1 = page_choose.PAGE()
 
 page_mode1 = page_mode_only_burn.PAGE(
-    bin_file, USB_PORT(8, "左单"), USB_PORT(6, "中上"), USB_PORT(5, "中下")
+    bin_file, USB_PORT(8, "usb1"), USB_PORT(6, "usb2"), USB_PORT(5, "usb3")
 )
 
 page_mode2 = page_mode_only_send.PAGE(
-    PY_PATH, USB_PORT(8, "左单"), USB_PORT(6, "中上"), USB_PORT(5, "中下")
+    PY_PATH, USB_PORT(8, "usb1"), USB_PORT(6, "usb2"), USB_PORT(5, "usb3")
 )
 
 

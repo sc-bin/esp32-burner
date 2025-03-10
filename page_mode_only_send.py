@@ -14,7 +14,7 @@ class PAGE(PAGE_MODE):
     files_size = 0
 
     def set_color_run(self, label: QtWidgets.QLabel):
-        label_set_stylesheet(label, color.label_background.send_runing)
+        label_set_stylesheet(label, color.label_background.send_running)
 
     def set_color_end(self, label: QtWidgets.QLabel):
         label_set_stylesheet(label, color.label_background.send_end)
@@ -34,6 +34,7 @@ class PAGE(PAGE_MODE):
             return
         usb_progress.print("正在清除板上py文件")
         transfer.TRANSFER(acm_path).files_clear()
+        usb_progress.label_setText("发送文件...")
         total = 0
         # 挨个发送
         for i in self.files:
@@ -56,6 +57,9 @@ class PAGE(PAGE_MODE):
                 usb_progress.progress.set_value(int(total / self.files_size * 100))
             else:
                 self.set_color_error(usb_progress.label)
+                usb_progress.print("错误")
+                usb_progress.label_setText("错误")
+
                 return
             self.set_color_end(usb_progress.label)
         transfer.TRANSFER(acm_path).run_py_file(self.file_dir + "/main.py")
@@ -63,6 +67,7 @@ class PAGE(PAGE_MODE):
         usb_progress.print(
             f"文件传输完成: {end_time - start_time:.2f} 秒"
         )  # 输出总共花费的时间
+        usb_progress.label_setText("文件传输完成")
 
     def __init__(
         self,
