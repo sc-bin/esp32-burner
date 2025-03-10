@@ -19,25 +19,25 @@ class PAGE(PAGE_MODE):
             print(acm_path)
         else:
             print("未找到acm路径")
-            label_set_stylesheet(usb_progress.label, ui.label_color_error.styleSheet())
+            label_set_stylesheet(usb_progress.label, color.label_background.error)
             return
         usb_progress.print("开始烧BIN")
         usb_progress.progress.set_value(0)
-        label_set_stylesheet(usb_progress.label, ui.label_color_burn_bin.styleSheet())
+        label_set_stylesheet(usb_progress.label, color.label_background.burn_runing)
 
         def progress(value: int):
             usb_progress.progress.set_value(value)
 
         if transfer.TRANSFER(acm_path).burner_picoW(self.bin_file, progress):
-            label_set_stylesheet(
-                usb_progress.label, ui.label_color_burn_bin_end.styleSheet()
-            )
+            label_set_stylesheet(usb_progress.label, color.label_background.burn_end)
             end_time = time.time()  # 记录结束时间
-            usb_progress.print(f"烧BIN完成: {end_time - start_time:.2f} 秒")  # 输出总共花费的时间
+            usb_progress.print(
+                f"烧BIN完成: {end_time - start_time:.2f} 秒"
+            )  # 输出总共花费的时间
             usb_progress.progress.set_value(100)
 
         else:
-            label_set_stylesheet(usb_progress.label, ui.label_color_error.styleSheet())
+            label_set_stylesheet(usb_progress.label, color.label_background.error)
             usb_progress.print("错误")
             usb_progress.progress.set_value(0)
 

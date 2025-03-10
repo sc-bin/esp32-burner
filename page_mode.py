@@ -3,10 +3,10 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtCore import *
 from PyQt5.QtGui import *
 
-import os
 import time
 from usb_port import USB_PORT
 import ui_mode
+import color
 
 ui = ui_mode.Ui_MainWindow()
 
@@ -77,7 +77,7 @@ class USB_PROGRESS:
         self.flag_working = True
         print("USB拔出", port.description)
         self.print("拔出")
-        label_set_stylesheet(self.label, ui.label_color_free.styleSheet())
+        label_set_stylesheet(self.label, color.label_background.free)
         self.progress.set_value(0)
 
         self.flag_working = False

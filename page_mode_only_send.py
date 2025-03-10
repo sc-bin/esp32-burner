@@ -5,6 +5,7 @@ from page_mode import *
 
 from usb_port import USB_PORT
 import transfer
+import color
 
 
 class PAGE(PAGE_MODE):
@@ -13,13 +14,13 @@ class PAGE(PAGE_MODE):
     files_size = 0
 
     def set_color_run(self, label: QtWidgets.QLabel):
-        label_set_stylesheet(label, ui.label_color_send_py.styleSheet())
+        label_set_stylesheet(label, color.label_background.send_runing)
 
     def set_color_end(self, label: QtWidgets.QLabel):
-        label_set_stylesheet(label, ui.label_color_send_py_end.styleSheet())
+        label_set_stylesheet(label, color.label_background.send_end)
 
     def set_color_error(self, label: QtWidgets.QLabel):
-        label_set_stylesheet(label, ui.label_color_error.styleSheet())
+        label_set_stylesheet(label, color.label_background.error)
 
     def run_in_connected(self, port: USB_PORT, usb_progress: USB_PROGRESS):
         start_time = time.time()  # 记录开始时间
@@ -27,7 +28,7 @@ class PAGE(PAGE_MODE):
         if os.path.exists(acm_path):
             print(acm_path)
         else:
-            label_set_stylesheet(usb_progress.label, ui.label_color_error.styleSheet())
+            self.set_color_error(usb_progress.label)
             print("未找到acm路径")
             self.set_color_error(usb_progress.label)
             return
@@ -47,8 +48,10 @@ class PAGE(PAGE_MODE):
             if os.path.dirname(relative_path):  # 如果相对路径有父目录
                 sub_dir = os.path.dirname(relative_path)
                 transfer.TRANSFER(acm_path).mkdir_on_board(sub_dir)  # 创建子目录
-            print("relative_path=",relative_path)
-            if transfer.TRANSFER(acm_path).send_file(i, relative_path):  # 发送文件到相对路径
+            print("relative_path=", relative_path)
+            if transfer.TRANSFER(acm_path).send_file(
+                i, relative_path
+            ):  # 发送文件到相对路径
                 total += now_file_size
                 usb_progress.progress.set_value(int(total / self.files_size * 100))
             else:
@@ -57,7 +60,9 @@ class PAGE(PAGE_MODE):
             self.set_color_end(usb_progress.label)
         transfer.TRANSFER(acm_path).run_py_file(self.file_dir + "/main.py")
         end_time = time.time()  # 记录结束时间
-        usb_progress.print(f"文件传输完成: {end_time - start_time:.2f} 秒")  # 输出总共花费的时间
+        usb_progress.print(
+            f"文件传输完成: {end_time - start_time:.2f} 秒"
+        )  # 输出总共花费的时间
 
     def __init__(
         self,
