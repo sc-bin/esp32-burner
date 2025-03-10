@@ -1,5 +1,6 @@
 import os
-import esptool
+import subprocess
+import re  # 添加正则表达式模块
 
 banudrate = 1152000
 # banudrate = 921600
@@ -37,9 +38,7 @@ class AMPY_OPS(object):
         if not os.path.exists(self.tty_path):
             print(self.tty_path, "路径不存在")
             return False
-        ret = os.popen(
-            f"ampy --baud {banudrate} --port {self.tty_path} {command}"
-        )
+        ret = os.popen(f"ampy --baud {banudrate} --port {self.tty_path} {command}")
         return ret.read()
 
     def is_in_burn_mode(self) -> bool:
@@ -85,32 +84,54 @@ class AMPY_OPS(object):
 class TRANSFER(AMPY_OPS):
     tty_path: str
 
-    def burner_picoW(self, firmware_path: str) -> bool:
+    def burner_picoW(self, firmware_path: str, progress_callback=None) -> bool:
         """烧录picoW固件"""
         if not os.path.exists(firmware_path):
             print(firmware_path, "不存在")
             return False
         try:
-            esptool.main(
-                [
-                    "--chip",
-                    "esp32s3",
-                    "--port",
-                    self.tty_path,
-                    "--after",
-                    "hard_reset",
-                    "write_flash",
-                    "-z",
-                    "0",
-                    firmware_path,
-                ]
+            command = [
+                "esptool.py",
+                "--chip",
+                "esp32s3",
+                "--port",
+                self.tty_path,
+                "--after",
+                "hard_reset",
+                "write_flash",
+                "-z",
+                "0",
+                firmware_path,
+            ]
+            process = subprocess.Popen(
+                command, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True
             )
-            print("烧录完成")
-            return True
-        except esptool.FatalError as e:
-            print("烧录失败:", e)
-        except:
-            print("错误")
+            last_progress = -1
+            while True:
+                output = process.stdout.readline()
+                if output == "" and process.poll() is not None:
+                    break
+                if output:
+                    print(output.strip())
+                    # 解析进度信息
+                    if "Writing at" in output:
+                        # 使用正则表达式提取百分比
+                        match = re.search(r"(\d+) %", output)
+                        if match:
+                            progress = int(match.group(1))
+                            if progress != last_progress:
+                                last_progress = progress
+                                if progress_callback:
+                                    progress_callback(progress)
+            rc = process.poll()
+            if rc == 0:
+                print("烧录完成")
+                return True
+            else:
+                print("烧录失败")
+                return False
+        except Exception as e:
+            print("错误:", e)
         return False
 
     def __init__(self, tty_path: str):

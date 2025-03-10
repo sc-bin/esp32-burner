@@ -21,21 +21,23 @@ class PAGE(PAGE_MODE):
             label_set_stylesheet(usb_progress.label, ui.label_color_error.styleSheet())
             return
         usb_progress.print("开始烧BIN")
-        usb_progress.progress.set_value(50)
+        usb_progress.progress.set_value(0)
         label_set_stylesheet(usb_progress.label, ui.label_color_burn_bin.styleSheet())
-        if transfer.TRANSFER(acm_path).burner_picoW(self.bin_file):
+
+        def progress(value: int):
+            usb_progress.progress.set_value(value)
+
+        if transfer.TRANSFER(acm_path).burner_picoW(self.bin_file, progress):
             label_set_stylesheet(
                 usb_progress.label, ui.label_color_burn_bin_end.styleSheet()
             )
             usb_progress.print("烧BIN完成")
             usb_progress.progress.set_value(100)
 
-
         else:
             label_set_stylesheet(usb_progress.label, ui.label_color_error.styleSheet())
             usb_progress.print("错误")
             usb_progress.progress.set_value(0)
-
 
     def __init__(
         self,
