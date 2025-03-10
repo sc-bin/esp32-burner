@@ -25,8 +25,8 @@ import page_mode_only_burn
 import page_mode_only_send
 import page_choose
 
-PY_PATH = os.path.dirname(__file__) + "/要传输的py文件存放到此/py"
-FIRMWARE_PATH = os.path.dirname(__file__) + "/待烧录的bin文件存放到此"
+PY_PATH = os.path.dirname(__file__) + "/files/py"
+FIRMWARE_PATH = os.path.dirname(__file__) + "/files/bin"
 # 查找FIRMWARE_PATH路径下第一个.bin文件
 bin_file = None
 for file in os.listdir(FIRMWARE_PATH):
