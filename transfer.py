@@ -6,7 +6,7 @@ baudrate = 1152000
 # banudrate = 921600
 
 
-class AMPY_OPS(object):
+class RSHELL_OPS(object):
     tty_path: str
 
     def __init__(self, tty_path: str):
@@ -20,7 +20,7 @@ class AMPY_OPS(object):
         else:
             return True
 
-    def run(self, command: str) -> bool:
+    def run_rshell(self, command: str) -> bool:
         """运行命令,并返回是否运行成功"""
         if not os.path.exists(self.tty_path):
             print(self.tty_path, "路径不存在")
@@ -53,11 +53,11 @@ class AMPY_OPS(object):
 
     def send_file(self, py_path: str, dest_path="") -> bool:
         """发送文件到micropython板子指定路径上"""
-        return self.run(f"cp {py_path} /pyboard/{dest_path}")
+        return self.run_rshell(f"cp {py_path} /pyboard/{dest_path}")
 
     def files_clear(self) -> bool:
         """清除micropython板子上的文件"""
-        self.run(f"rm -rf /pyboard/*")
+        self.run_rshell(f"rm -rf /pyboard/*")
         return True
 
     def mkdir_on_board(self, dir_name: str) -> bool:
@@ -66,7 +66,7 @@ class AMPY_OPS(object):
         if self.is_file_on_board(dir_name):
             print("文件夹已存在")
             return True
-        return self.run(f"mkdir /pyboard/{dir_name}")
+        return self.run_rshell(f"mkdir /pyboard/{dir_name}")
 
     def is_file_on_board(self, file_name: str) -> bool:
         """判断文件是否存在"""
@@ -75,14 +75,34 @@ class AMPY_OPS(object):
 
     def reset_mpy_board(self):
         """重启micropython板子"""
-        return self.run(f"repl ~ import machine; machine.reset()")
+        return self.run_rshell(f"repl ~ import machine; machine.reset()")
+
+
+class AMPY_OPS(object):
+    tty_path: str
+
+    def __init__(self, tty_path: str):
+        self.tty_path = tty_path
+
+    def run_ampy(self, command: str) -> bool:
+        """传入ampy命令运行"""
+        if not os.path.exists(self.tty_path):
+            print(self.tty_path, "路径不存在")
+            return False
+        ret = os.system(f"ampy --port {self.tty_path} {command}")
+        if ret == 0:
+            print("运行成功")
+            return True
+        else:
+            print("运行失败")
+            return False
 
     def run_py_file(self, file_name: str):
         """运行电脑上的文件"""
-        return self.run(f"repl ~ exec(open('{file_name}').read())")
+        return self.run_ampy(f"run {file_name}")
 
 
-class TRANSFER(AMPY_OPS):
+class TRANSFER(RSHELL_OPS, AMPY_OPS):
     tty_path: str
 
     def burner_picoW(self, firmware_path: str, progress_callback=None) -> bool:
@@ -136,4 +156,5 @@ class TRANSFER(AMPY_OPS):
         return False
 
     def __init__(self, tty_path: str):
-        super().__init__(tty_path)
+        RSHELL_OPS.__init__(self, tty_path)
+        AMPY_OPS.__init__(self, tty_path)

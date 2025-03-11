@@ -58,12 +58,12 @@ class PAGE(PAGE_MODE):
 
                 return
             self.set_color_end(usb_progress)
-        transfer.TRANSFER(acm_path).run_py_file(self.file_dir + "/main.py")
         end_time = time.time()  # 记录结束时间
         usb_progress.print(
             f"文件传输完成: {end_time - start_time:.2f} 秒"
         )  # 输出总共花费的时间
         usb_progress.label_setText("文件传输完成")
+        transfer.TRANSFER(acm_path).run_py_file(self.file_dir + "/main.py")
 
     def __init__(
         self,
