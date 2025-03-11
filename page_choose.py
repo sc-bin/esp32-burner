@@ -20,4 +20,3 @@ class PAGE(QtWidgets.QMainWindow):
         self.ui.setupUi(self)
         self.ui.pushButton_mode_1.clicked.connect(lambda: self.callback(1))
         self.ui.pushButton_mode_2.clicked.connect(lambda: self.callback(2))
-        self.ui.pushButton_mode_3.clicked.connect(lambda: self.callback(3))
