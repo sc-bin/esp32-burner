@@ -81,6 +81,9 @@ class PAGE(PAGE_MODE):
         # 遍历py_file_dir路径下所有子文件夹，将搜索到的所有文件的完整路径都添加到列表
         for root, dirs, files in os.walk(py_file_dir):
             for file in files:
+                # 排除掉名为.none的本项目占位用的文件
+                if file == ".none":
+                    continue
                 self.files.append(os.path.join(root, file))
 
         # 计算总文件大小
