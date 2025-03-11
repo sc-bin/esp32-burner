@@ -5,6 +5,7 @@
 ```shell
 sudo pip3 install esptool
 sudo pip3 install adafruit-ampy
+sudo pip3 install rshell
 ```
 ## 2.把本文件夹存放到/boot/start路径下
 ## 3.运行本文件夹下的安装脚本
