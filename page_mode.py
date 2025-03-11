@@ -35,11 +35,13 @@ class USB_PROGRESS:
     flag_working = False
     callback = None
     last_disconnect_time = None  # 新增属性，记录上次USB拔出的时间
-
+    _textEdit_ops: textEdit_ops
+    _label_ops: label_ops
     def textEdit_append(self, string: str):
-        run_at_sloat(lambda: self.textEdit.append(string))
+        self._textEdit_ops.append(string)
+
     def label_setText(self, string: str):
-        run_at_sloat(lambda: self.label.setText(string))
+        self._label_ops.setText(string)
 
     def print(self, text: str):
         log_str = f'{time.strftime("%H:%M:%S", time.localtime())}: {text}'
@@ -51,7 +53,7 @@ class USB_PROGRESS:
         if self.last_disconnect_time and (current_time - self.last_disconnect_time) < 3:
             self.print("本次拔出不超过3秒,不处理")
             self.label_setText("usb防抖保护")
-            return  
+            return
         self.print("插入")
         self.label_setText(port.description + "插入")
         self.flag_working = True
@@ -63,7 +65,8 @@ class USB_PROGRESS:
         self.flag_working = True
         self.print("拔出")
         self.label_setText(port.description + "拔出")
-        label_set_stylesheet(self.label, color.label_background.free)
+        # label_set_stylesheet(self.label, color.label_background.free)
+        self._label_ops.setStyleSheet(color.label_background.free)
         self.progress.set_value(0)
         self.last_disconnect_time = time.time()  # 记录USB拔出的时间
         self.flag_working = False
@@ -76,8 +79,10 @@ class USB_PROGRESS:
         progressBar: QtWidgets.QProgressBar,
     ):
         self.label = label
+        self._label_ops = label_ops(self.label)
         self.progress = bar_ops(progressBar)
         self.textEdit = textEdit
+        self._textEdit_ops = textEdit_ops(self.textEdit)
         self.usb = usb
         self.usb.regester_callback_connected(self.__callback_connected)
         self.usb.regester_callback_disconnect(self.__callback_disconnect)

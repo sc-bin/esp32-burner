@@ -13,14 +13,14 @@ class PAGE(PAGE_MODE):
     files = []
     files_size = 0
 
-    def set_color_run(self, label: QtWidgets.QLabel):
-        label_set_stylesheet(label, color.label_background.send_running)
+    def set_color_run(self, usb_progress: USB_PROGRESS):
+        usb_progress._label_ops.setStyleSheet(color.label_background.send_running)
 
-    def set_color_end(self, label: QtWidgets.QLabel):
-        label_set_stylesheet(label, color.label_background.send_end)
+    def set_color_end(self, usb_progress: USB_PROGRESS):
+        usb_progress._label_ops.setStyleSheet(color.label_background.send_end)
 
-    def set_color_error(self, label: QtWidgets.QLabel):
-        label_set_stylesheet(label, color.label_background.error)
+    def set_color_error(self, usb_progress: USB_PROGRESS):
+        usb_progress._label_ops.setStyleSheet(color.label_background.error)
 
     def run_in_connected(self, port: USB_PORT, usb_progress: USB_PROGRESS):
         start_time = time.time()  # 记录开始时间
@@ -28,14 +28,13 @@ class PAGE(PAGE_MODE):
         if os.path.exists(acm_path):
             print(acm_path)
         else:
-            self.set_color_error(usb_progress.label)
             print("未找到acm路径")
-            self.set_color_error(usb_progress.label)
+            self.set_color_error(usb_progress)
             return
         usb_progress.print("正在清除板上py文件")
         transfer.TRANSFER(acm_path).files_clear()
         usb_progress.label_setText("发送文件...")
-        self.set_color_run(usb_progress.label)
+        self.set_color_run(usb_progress)
         total = 0
         # 挨个发送
         for i in self.files:
@@ -53,12 +52,12 @@ class PAGE(PAGE_MODE):
                 total += now_file_size
                 usb_progress.progress.set_value(int(total / self.files_size * 100))
             else:
-                self.set_color_error(usb_progress.label)
+                self.set_color_error(usb_progress)
                 usb_progress.print("错误")
                 usb_progress.label_setText("错误")
 
                 return
-            self.set_color_end(usb_progress.label)
+            self.set_color_end(usb_progress)
         transfer.TRANSFER(acm_path).run_py_file(self.file_dir + "/main.py")
         end_time = time.time()  # 记录结束时间
         usb_progress.print(
