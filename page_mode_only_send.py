@@ -36,12 +36,18 @@ class PAGE(PAGE_MODE):
         usb_progress.label_setText("发送文件...")
         self.set_color_run(usb_progress)
         total = 0
+        flag_flash=False
+        if transfer.TRANSFER(acm_path).is_file_on_board("flash") :
+            flag_flash=True
+        
         # 挨个发送
         for i in self.files:
             now_file_size = os.path.getsize(i)
             relative_path = os.path.relpath(i, self.file_dir)  # 计算相对路径
             usb_progress.print(relative_path + " " + str(now_file_size))
-
+            if flag_flash:
+                relative_path="flash/"+relative_path
+                print(relative_path)
             # 判断是否创建子文件夹
             if os.path.dirname(relative_path):  # 如果相对路径有父目录
                 sub_dir = os.path.dirname(relative_path)

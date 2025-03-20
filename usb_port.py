@@ -69,14 +69,14 @@ class USB_PORT(object):
 
     def get_dev_path(self) -> str:
         """获取该usb口对应的设备路径"""
-        usb_deb_tty_path = (
-            self.USB_DEV_PATH + "/" + str(self.port_number) + "-1:1.0/tty"
-        )
-        if os.path.exists(usb_deb_tty_path):
-            acm_name = os.listdir(usb_deb_tty_path)[0]
-            if acm_name == "":
-                return ""
-            dev_path = "/dev/" + acm_name
-            if os.path.exists(dev_path):
-                return dev_path
+        port_str = str(self.port_number)
+        for entry in os.listdir(self.USB_DEV_PATH):
+            if entry.startswith(port_str):
+                tty_path = os.path.join(self.USB_DEV_PATH, entry, "tty")
+                if os.path.exists(tty_path):
+                    acm_name = os.listdir(tty_path)[0]
+                    if acm_name:
+                        dev_path = "/dev/" + acm_name
+                        if os.path.exists(dev_path):
+                            return dev_path
         return ""

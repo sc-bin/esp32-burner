@@ -3,7 +3,8 @@ import subprocess
 import re  # 添加正则表达式模块
 
 baudrate = 1152000
-# banudrate = 921600
+# baudrate = 921600
+# baudrate = 115200
 
 
 class RSHELL_OPS(object):
