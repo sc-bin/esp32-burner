@@ -13,6 +13,9 @@ class RSHELL_OPS(object):
     def __init__(self, tty_path: str):
         self.tty_path = tty_path
 
+    def replace_space(self, command: str) -> str:
+        """替换空格为\ """
+        return command.replace(" ", "\\ ")
     def is_tty_exists(self) -> bool:
         """判断tty路径是否存在"""
         if not os.path.exists(self.tty_path):
@@ -23,6 +26,7 @@ class RSHELL_OPS(object):
 
     def run_rshell(self, command: str) -> bool:
         """运行命令,并返回是否运行成功"""
+        print("运行命令:", command)
         if not os.path.exists(self.tty_path):
             print(self.tty_path, "路径不存在")
             return False
@@ -54,7 +58,7 @@ class RSHELL_OPS(object):
 
     def send_file(self, py_path: str, dest_path="") -> bool:
         """发送文件到micropython板子指定路径上"""
-        return self.run_rshell(f"cp {py_path} /pyboard/{dest_path}")
+        return self.run_rshell(f"cp \"{self.replace_space(py_path)}\" \"/pyboard/{self.replace_space(dest_path)}\"")
 
     def files_clear(self) -> bool:
         """清除micropython板子上的文件"""
